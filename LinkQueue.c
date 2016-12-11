@@ -3,83 +3,67 @@
 
 struct node
 {
-	int data;
+	int key;
 	struct node *next;
 };
 
-struct node *front = NULL;
-struct node *rear = NULL;
+struct node *head = NULL;
+struct node *tail = NULL;
 struct node *curr = NULL;
 
 void Print()
 {
-	curr = front;
+	curr = head;
 	
 	if (curr == NULL)
-		printf("Linked List is Empty.");
+		printf("Queue is Empty.");
 	
 	else
 		while (curr)
 		{
-			printf("%d ", curr->data);
+			printf("%d ", curr->key);
 			curr = curr->next;
 		}
 	
 	printf("\n");
 }
 
-void Enqueue()
+void Enqueue(struct node *x)
 {
-	curr = (struct node*)malloc(sizeof(struct node));
-	
-	if (curr == NULL)
-	{
-		printf("Queue Overflow.\n");
-		return;
-	}
-	
-	printf("Enter Data: ");
-	scanf("%d", &curr->data);
-	
-	if (rear == NULL)
-		front = curr;
+	if (tail == NULL)
+		head = x;
 	
 	else
-		rear->next = curr;
+		tail->next = x;
 	
-	rear = curr;
-	rear->next = NULL;
-
-	Print();
+	tail = x;
+	tail->next = NULL;
 }
 
 void Dequeue()
 {
 	struct node *temp = NULL;
 	
-	if (front == NULL)
+	if (head == NULL)
 	{
 		printf("Queue Underflow.\n");
 		return;
 	}
 	
-	temp = front;
+	temp = head;
 	
-	if (front == rear)
-		front = rear = NULL;
-	
+	if (head == tail)
+		head = tail = NULL;
 	else
-		front = front->next;
+		head = head->next;
 	
 	temp->next = NULL;
 	free(temp);
-	
-	Print();
 }
 
 int main()
 {
-	int n;
+	int n, k;
 	
 	do
 	{
@@ -93,8 +77,16 @@ int main()
 		switch (n)
 		{
 			case 1: Print(); break;
-			case 2: Enqueue(); break;
-			case 3: Dequeue(); break;
+            case 2: printf("Enter Key: ");
+                    scanf("%d", &k);
+                    curr = (struct node*)malloc(sizeof(struct node));
+                    curr->key = k;
+                    Enqueue(curr);
+                    Print();
+                    break;
+			case 3: Dequeue();
+                    Print();
+                    break;
 			case 0: break;
 			default: printf("Invalid Input. Try Again.\n");
 		}

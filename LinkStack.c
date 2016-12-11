@@ -3,7 +3,7 @@
 
 struct node
 {
-	int data;
+	int key;
 	struct node *next;
 };
 
@@ -20,48 +20,42 @@ void Print()
 	else
 		while (curr)
 		{
-			printf("%d ", curr->data);
+			printf("%d ", curr->key);
 			curr = curr->next;
 		}
 	
 	printf("\n");
 }
 
-void Push()
+int StackEmpty()
 {
-	curr = (struct node*)malloc(sizeof(struct node));
-	
-	if (curr == NULL)
+    if (top == NULL)
+        return 1;
+    return 0;
+}
+
+void Push(struct node *x)
+{
+   	if (top == NULL)
 	{
-		printf("Stack Overflow.\n");
-		return;
-	}
-	
-	printf("Enter Data: ");
-	scanf("%d", &curr->data);
-	
-	if (top == NULL)
-	{
-		top = curr;
+		top = x;
 		top->next = NULL;
 	}
 	
 	else
 	{
-		curr->next = top;
-		top = curr;
+		x->next = top;
+		top = x;
 	}
-	
-	Print();
 }
 
 void Pop()
 {
-	struct node *temp = NULL;
-	
-	if (top == NULL)
+    struct node *temp = NULL;
+
+    if (StackEmpty())
 	{
-		printf("Stack Underflow.\n");
+		printf("Underflow.\n");
 		return;
 	}
 	
@@ -69,13 +63,11 @@ void Pop()
 	top = top->next;
 	temp->next = NULL;
 	free(temp);
-	
-	Print();
 }
 
 int main()
 {
-	int n;
+	int n, k;
 	
 	do
 	{
@@ -89,8 +81,16 @@ int main()
 		switch (n)
 		{
 			case 1: Print(); break;
-			case 2: Push(); break;
-			case 3: Pop(); break;
+            case 2: printf("Enter Key: ");
+                    scanf("%d", &k);
+                    curr = (struct node*)malloc(sizeof(struct node));
+                    curr->key = k;
+                    Push(curr);
+                    Print();
+                    break;
+			case 3: Pop(); 
+                    Print();
+                    break;
 			case 0: break;
 			default: printf("Invalid Input. Try Again.\n");
 		}
