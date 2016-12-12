@@ -3,268 +3,310 @@
 
 struct node
 {
-	int data;
+	int key;
+	struct node *p;
 	struct node *left;
 	struct node *right;
 };
 
+struct node *x = NULL;
+struct node *y = NULL;
+struct node *z = NULL;
 struct node *root = NULL;
-struct node *curr = NULL;
-struct node *par = NULL;
-struct node *loc = NULL;
 
-void Preorder(struct node *root)
+void InorderTreeWalk(struct node *x)
 {
-	if (root != NULL)
+	if (x != NULL)
 	{
-		printf("%d ", root->data);
-		Preorder(root->left);
-		Preorder(root->right);
+		InorderTreeWalk(x->left);
+		printf("%d ", x->key);
+		InorderTreeWalk(x->right);
 	}
 }
 
-void Inorder(struct node *root)
+void PreorderTreeWalk(struct node *x)
 {
-	if (root != NULL)
+	if (x != NULL)
 	{
-		Inorder(root->left);
-		printf("%d ", root->data);
-		Inorder(root->right);
+		printf("%d ", x->key);
+		PreorderTreeWalk(x->left);
+		PreorderTreeWalk(x->right);
 	}
 }
 
-void Postorder(struct node *root)
+void PostorderTreeWalk(struct node *x)
 {
-	if (root != NULL)
+	if (x != NULL)
 	{
-		Postorder(root->left);
-		Postorder(root->right);
-		printf("%d ", root->data);
+		PostorderTreeWalk(x->left);
+		PostorderTreeWalk(x->right);
+		printf("%d ", x->key);
 	}
 }
 
-struct node* Find(struct node *root, int key)
+struct node *TreeSearch(struct node *x, int k)
 {
-	par = loc = NULL;
-	curr = root;
-	
-	while (curr)
-	{
-		if (curr->data == key)
-		{
-			loc = curr;
-			printf("Key found!\n");
-			return loc;
-		}
-		
-		par = curr;
-		
-		if (curr->data < key)
-			curr = curr->right;
-		
+	if (x == NULL || k == x->key)
+		return x;
+
+	if (k < x->key)
+		return TreeSearch(x->left, k);
+
+	return TreeSearch(x->right, k);
+}
+
+struct node *IterativeTreeSearch(struct node *x, int k)
+{
+	while (x != NULL && k != x->key)
+		if (k < x->key)
+			x = x->left;
 		else
-			curr = curr->left;
-	}
-	
-	printf("Key not found.\n");
-	return NULL;
+			x = x->right;
+
+	return x;
 }
 
-void Insert(struct node **root, struct node *curr)
+struct node *TreeMinimum(struct node *x)
 {
-	if (*root == NULL)
+	while (x->left != NULL)
+		x = x->left;
+
+	return x;
+}
+
+struct node *TreeMaximum(struct node *x)
+{
+	while (x->right != NULL)
+		x = x->right;
+
+	return x;
+}
+
+struct node *TreeMinimumRecursive(struct node *x)
+{
+	if (x->left != NULL)
+		return TreeMinimumRecursive(x->left);
+
+	return x;
+}
+
+struct node *TreeMaximumRecursive(struct node *x)
+{
+	if (x->right != NULL)
+		return TreeMaximumRecursive(x->right);
+
+	return x;
+}
+
+struct node *TreeSuccessor(struct node *x)
+{
+	if (x->right != NULL)
+		return TreeMinimum(x->right);
+
+	struct node *y = x->p;
+
+	while (y != NULL && x == y->right)
 	{
-		*root = curr;
-		return;
+		x = y;
+		y = y->p;
 	}
-	
-	if ((*root)->data < curr->data)
-		Insert(&(*root)->right, curr);
-	
+
+	return y;
+}
+
+struct node *TreePredecessor(struct node *x)
+{
+	if (x->left != NULL)
+		return TreeMaximum(x->left);
+
+	struct node *y = x->p;
+
+	while (y != NULL && x == y->left)
+	{
+		x = y;
+		y = y->p;
+	}
+
+	return y;
+}
+
+void TreeInsert(struct node *z)
+{
+	y = NULL;
+	x = root;
+
+	while (x != NULL)
+	{
+		y = x;
+
+		if (z->key < x->key)
+			x = x->left;
+		else
+			x = x->right;
+	}
+
+	z->p = y;
+
+	if (y == NULL)
+		root = z;
+	else if (z->key < y->key)
+		y->left = z;
 	else
-		Insert(&(*root)->left, curr);
+		y->right = z;
 }
 
-void Create()
+void Transplant(struct node *u, struct node *v)
 {
-	curr = (struct node*)malloc(sizeof(struct node));
-	
-	if (curr == NULL)
-	{
-		printf("Error.\n");
-		return;
-	}
-	
-	printf("Enter Data: ");
-	scanf("%d", &curr->data);
-	
-	curr->left = NULL;
-	curr->right = NULL;
+	if (u->p == NULL)
+		root = v;
+	else if (u == u->p->left)
+		u->p->left = v;
+	else
+		u->p->right = v;
 
-	Insert(&root, curr);
+	if (v != NULL)
+		v->p = u->p;
 }
 
-void Delete(struct node **root, int key)
+void TreeDelete(struct node *z)
 {
-	struct node *temp;
-	
-	temp = Find(*root, key);
-	
-	if (temp == NULL)
-		return;
-
-	if (temp->left == NULL && temp->right == NULL)
-	{
-		if (par == NULL)
-		{
-			*root = NULL;
-			return;
-		}
-		
-		if (par->left == temp)
-			par->left = NULL;
-		else
-			par->right = NULL;
-		
-		free(temp);
-	}
-	
-	else if (temp->left != NULL && temp->right == NULL)
-	{
-		if (par == NULL)
-		{
-			(*root)->data = (*root)->left->data;
-			temp = (*root)->left;
-			(*root)->left = NULL;
-		}
-		
-		else if (par->left == temp)
-			par->left = temp->left;
-		else
-			par->right = temp->left;
-		
-		free(temp);
-	}
-	
-	else if (temp->left == NULL && temp->right != NULL)
-	{
-		if (par == NULL)
-		{
-			(*root)->data = (*root)->right->data;
-			temp = (*root)->right;
-			(*root)->right = NULL;
-		}
-		
-		else if (par->left == temp)
-			par->left = temp->right;
-		else
-			par->right = temp->right;
-		
-		free(temp);
-	}
-	
+	if (z->left == NULL)
+		Transplant(z, z->right);
+	else if (z->right == NULL)
+		Transplant(z, z->left);
 	else
 	{
-		par = temp;
-		curr = temp->right;
-		
-		while (curr->left != NULL)
+		y = TreeMinimum(z->right);
+
+		if (y->p != z)
 		{
-			par = curr;
-			curr = curr->left;
+			Transplant(y, y->right);
+			y->right = z->right;
+			y->right->p = y;
 		}
-		
-		temp->data = curr->data;
-		
-		if (par->left == curr)
-			par->left = NULL;
-		
-		else
-			par->right = NULL;
-		
-		free(curr);
-	}
-}
 
-void Min()
-{
-	curr = root;
-	
-	if (curr == NULL)
-	{
-		printf("Binary Search Tree is Empty.\n");
-		return;
+		Transplant(z, y);
+		y->left = z->left;
+		y->left->p = y;
 	}
-	
-	while (curr->left != NULL)
-		curr = curr->left;
-	
-	printf("The Minimum Element in Binary Search Tree is %d.\n", curr->data);
-}
-
-void Max()
-{
-	curr = root;
-	
-	if (curr == NULL)
-	{
-		printf("Binary Search Tree is Empty.\n");
-		return;
-	}
-	
-	while (curr->right != NULL)
-		curr = curr->right;
-	
-	printf("The Maximum Element in Binary Search Tree is %d.\n", curr->data);
-}
-
-int Height(struct node *root)
-{
-	if (root == NULL)
-		return -1;
-	
-	return Height(root->left) > Height(root->right) ? Height(root->left)+1 : Height(root->right)+1;
 }
 
 int main()
 {
-	int n, key;
-	
+	int n, k;
+
 	do
 	{
-		printf("1. Traverse Binary Search Tree in Preorder\n");
-		printf("2. Traverse Binary Search Tree in Inorder\n");
-		printf("3. Traverse Binary Search Tree in Postorder\n");
-		printf("4. Insert Node in Binary Search Tree\n");
-		printf("5. Delete Node in Binary Search Tree\n");
-		printf("6. Find Minimum Element in Binary Search Tree\n");
-		printf("7. Find Maximum Element in Binary Search Tree\n");
-		printf("8. Find Height of Binary Search Tree\n");
-		printf("9. Find Element in Binary Search Tree\n");
+		printf("1. Inorder Tree Walk\n");
+		printf("2. Preorder Tree Walk\n");
+		printf("3. Postorder Tree Walk\n");
+		printf("4. Search\n");
+		printf("5. Find Minimum\n");
+		printf("6. Find Maximum\n");
+		printf("7. Find Successor\n");
+		printf("8. Find Predecessor\n");
+		printf("9. Insert\n");
+		printf("10. Delete\n");
 		printf("0. Exit\n");
 		printf("Input: ");
 		scanf("%d", &n);
-		
+
 		switch (n)
 		{
-			case 1: Preorder(root); printf("\n"); break;
-			case 2: Inorder(root); printf("\n"); break;
-			case 3: Postorder(root); printf("\n"); break;
-			case 4: Create(); break;
-			case 5: printf("Enter Element to Delete: ");
-					scanf("%d", &key);
-					Delete(&root, key);
-					printf("Element %d deleted.\n", key);
-					break;
-			case 6: Min(); break;
-			case 7: Max(); break;
-			case 8: printf("The Height of the Binary Search Tree is %d.\n", Height(root)); break;
-			case 9: printf("Enter Element to Search: ");
-					scanf("%d", &key);
-					Find(root, key);
-					break;
-			case 0: break;
-			default: printf("Invalid Input. Try Again.\n");
+
+		case 1:
+			if (root)
+				InorderTreeWalk(root);
+			else
+				printf("Tree is Empty.");
+			printf("\n");
+			break;
+		case 2:
+			if (root)
+				PreorderTreeWalk(root);
+			else
+				printf("Tree is Empty.");
+			printf("\n");
+			break;
+		case 3:
+			if (root)
+				PostorderTreeWalk(root);
+			else
+				printf("Tree is Empty.");
+			printf("\n");
+			break;
+		case 4:
+			printf("Enter Key to Search: ");
+			scanf("%d", &k);
+			if (TreeSearch(&x, k) != NULL)
+				printf("Key Found.\n");
+			else
+				printf("Key Not Found.\n");
+
+			break;
+		case 5:
+			if (root)
+				printf("%d", TreeMinimum(root)->key);
+			else
+				printf("Tree is Empty");
+			printf("\n");
+			break;
+		case 6:
+			if (root)
+				printf("%d", TreeMaximum(root)->key);
+			else
+				printf("Tree is Empty");
+			printf("\n");
+			break;
+		case 7:
+			if (root)
+			{
+				printf("Enter Key: ");
+				scanf("%d", &k);
+				printf("%d", TreeSuccessor(TreeSearch(root, k))->key);
+			}
+			else
+				printf("Tree is Empty");
+			printf("\n");
+			break;
+		case 8:
+			if (root)
+			{
+				printf("Enter Key: ");
+				scanf("%d", &k);
+				printf("%d\n", TreePredecessor(TreeSearch(root, k))->key);
+			}
+			else
+				printf("Tree is Empty");
+			printf("\n");
+			break;
+		case 9:
+			z = (struct node *)malloc(sizeof(struct node));
+			printf("Enter Key: ");
+			scanf("%d", &z->key);
+			TreeInsert(z);
+			break;
+		case 10:
+			if (root)
+			{
+				printf("Enter Key: ");
+				scanf("%d", &k);
+				if (TreeSearch(root, k) != NULL)
+				{
+					TreeDelete(TreeSearch(root, k));
+					printf("%d deleted.", k);
+				}
+				else
+					printf("Key not Found.");
+			}
+			else
+				printf("Tree is Empty");
+			printf("\n");
+			break;
+		case 0:
+			break;
+		default:
+			printf("Invalid Input. Try Again.\n");
 		}
 	} while (n != 0);
 }

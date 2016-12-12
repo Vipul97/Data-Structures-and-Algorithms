@@ -1,65 +1,57 @@
 #include <stdio.h>
-#define size 4
+#define length 100
 
-int front = -1;
-int rear = -1;
+int head = 0, tail = 0;
 
 void Print(int Q[])
 {
 	int i;
-	
-	if (rear == -1)
-	{
-		printf("Queue is Empty.\n");
-		return;
-	}
-	
-	for (i = front; i <= rear; i++)
+
+	for (i = head; i != tail; i = (i + 1) % length)
 		printf("%d ", Q[i]);
-	
+
 	printf("\n");
 }
 
-void Enqueue(int Q[])
+void Enqueue(int Q[], int x)
 {
-	if (rear == size - 1)
+	if (head == (tail + 1) % length)
 	{
-		printf("Queue Overflow.\n");
+		printf("Overflow.\n");
 		return;
 	}
 
-	else if (rear ==  -1)
-		front = 0;
+	Q[tail] = x;
 
-	printf("Enter Data: ");
-	scanf("%d", &Q[++rear]);
-	
-	Print(Q);
+	if (tail == length - 1)
+		tail = 0;
+	else
+		tail++;
 }
 
-void Dequeue(int Q[])
+int Dequeue(int Q[])
 {
-	if (rear == -1)
+	if (head == tail)
 	{
-		printf("Queue Underflow.\n");
+		printf("Underflow.\n");
 		return;
 	}
-	
-	printf("%d popped\n", Q[front]);
-	
-	if (front == rear)
-		front = rear = -1;
-	
+
+	int x = Q[head];
+
+	if (head == length - 1)
+		head = 0;
 	else
-		front++;
-	
-	Print(Q);
+		head++;
+
+	return x;
 }
 
 int main()
 {
-	int n, Q[size];
-	
+	int n, x;
+	int Q[length];
+
 	do
 	{
 		printf("1. Print Queue\n");
@@ -68,14 +60,20 @@ int main()
 		printf("0. Exit\n");
 		printf("Input: ");
 		scanf("%d", &n);
-		
+
 		switch (n)
 		{
-			case 1: Print(Q); break;
-			case 2: Enqueue(Q); break;
-			case 3: Dequeue(Q); break;
-			case 0: break;
-			default: printf("Invalid Input. Try Again.\n");
+		case 1: Print(Q); break;
+		case 2: printf("Enter Value: ");
+			scanf("%d", &x);
+			Enqueue(Q, x);
+			Print(Q);
+			break;
+		case 3: Dequeue(Q);
+			Print(Q);
+			break;
+		case 0: break;
+		default: printf("Invalid Input. Try Again.\n");
 		}
 	} while (n != 0);
 }

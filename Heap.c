@@ -1,143 +1,170 @@
 #include <stdio.h>
-#define size 100
+#define Parent(i)		i/2
+#define Left(i)			2*i+1
+#define Right(i)		2 * i + 2
+#define HeapMaximum(A)	A[0]
 
-int root = -1, n = 0;
+int size = -1, length = 10;
 
-void Preorder(int A[], int i)
+void Print(int A[], int n)
 {
-	if (A[i] != -1)
-		printf("[%d: %d] ", i, A[i]);
-	
-	if (2*i + 1 < size)
-		Preorder(A, 2*i + 1);
-	
-	if (2*i + 2 < size)
-		Preorder(A, 2*i + 2);
-}
+	int i;
 
-void Inorder(int A[], int i)
-{
-	if (2*i + 1 < size)
-		Inorder(A, 2*i + 1);
+	for (i = 0; i <= length && A[i] != -1; i++)
+		printf("%d ", A[i]);
 
-	if (A[i] != -1)
-		printf("[%d: %d] ", i, A[i]);
-	
-	if (2*i + 2 < size)
-		Inorder(A, 2*i + 2);
-}
-
-void Postorder(int A[], int i)
-{
-	if (2*i + 1 < size)
-		Postorder(A, 2*i + 1);
-
-	if (2*i + 2 < size)
-		Postorder(A, 2*i + 2);
-	
-	if (A[i] != -1)
-		printf("[%d: %d] ", i, A[i]);
-	
-}
-
-void Insert(int A[])
-{
-	int data;
-	int p;
-	
-	printf("Enter Data: ");
-	scanf("%d", &data);
-	
-	n++;
-	p = n;
-	
-	while (p > 0)
-	{
-		if (A[p/2] < data)
-		{
-			A[p] = A[p/2];
-			p /= 2;
-		}
-		
-		else
-			break;
-	}
-	
-	printf("A[%d] = %d\n", p, data);
-	A[p] = data;
+	printf("\n");
 }
 
 void MaxHeapify(int A[], int i)
 {
-	int l = 2*i + 1;
-	int r = 2*i + 2;
+	int l = Left(i);
+	int r = Right(i);
 	int largest;
-	
-	if (l <= n && A[l] > A[i])
-		largest = l;
 
+	if (l <= size && A[l] > A[i])
+		largest = l;
 	else
 		largest = i;
 
-	if (r <= n && A[r] > A[largest])
+	if (r <= size && A[r] > A[largest])
 		largest = r;
-	
+
 	if (largest != i)
 	{
 		int t = A[i];
 		A[i] = A[largest];
 		A[largest] = t;
+
 		MaxHeapify(A, largest);
 	}
-
 }
 
-void Delete(int A[])
+void BuildMaxHeap(int A[])
 {
-	int max = A[0];
+	int i;
 
-	A[0] = A[n];
-	A[n] = -1;
-	
-	MaxHeapify(A, 0);
-	
-	if (n == 0)
-		printf("Heap is Empty.\n");
-	
-	else
+	size = length;
+
+	for (i = length / 2; i >= 0; i--)
+		MaxHeapify(A, i);
+}
+
+void Heapsort(int A[])
+{
+	int i;
+
+	BuildMaxHeap(A);
+
+	for (i = length; i > 0; i--)
 	{
-		printf("%d Deleted.\n", max);
-		n--;
+		int t = A[0];
+		A[0] = A[i];
+		A[i] = t;
+		size--;
+
+		MaxHeapify(A, 0);
 	}
+}
+
+int HeapExtractMax(int A[])
+{
+	if (size < 0)
+	{
+		printf("Heap Underflow.\n");
+		return;
+	}
+
+	int max = A[0];
+	A[0] = A[size];
+	size--;
+
+	MaxHeapify(A, 0);
+
+	return max;
+}
+
+void HeapIncreaseKey(int A[], int i, int key)
+{
+	if (key < A[i])
+	{
+		printf("New key is smaller than current key.\n");
+		return;
+	}
+
+	A[i] = key;
+
+	while (i > 0 && A[Parent(i)] < A[i])
+	{
+		int t = A[i];
+		A[i] = A[Parent(i)];
+		A[Parent(i)] = t;
+		i = Parent(i);
+	}
+}
+
+void MaxHeapInsert(int A[], int key)
+{
+	size++;
+	A[size] = -1;
+
+	HeapIncreaseKey(A, size, key);
 }
 
 int main()
 {
-	int n, i, A[size];
-	
-	for (i = 0; i < size; i++)
+	int n, i, A[length], key;
+
+	for (i = 0; i <= length; i++)
 		A[i] = -1;
-	
+
 	do
 	{
-		printf("1. Traverse Max Heap in Preorder\n");
-		printf("2. Traverse Max Heap in Inorder\n");
-		printf("3. Traverse Max Heap in Postorder\n");
-		printf("4. Insert Node in Max Heap\n");
-		printf("5. Delete Node from Max Heap\n");
+		printf("1. Print Heap\n");
+		printf("2. Build Max Heap\n");
+		printf("3. Heapsort\n");
+		printf("4. Extract Max\n");
+		printf("5. Increase Key\n");
+		printf("6. Insert in Max Heap\n");
 		printf("0. Exit\n");
 		printf("Input: ");
 		scanf("%d", &n);
-		
+
 		switch (n)
 		{
-			case 1: Preorder(A, 0); printf("\n"); break;
-			case 2: Inorder(A, 0); printf("\n"); break;
-			case 3: Postorder(A, 0); printf("\n"); break;
-			case 4: Insert(A); break;
-			case 5: Delete(A); break;
-			case 0: break;
-			default: printf("Invalid Input. Try Again.\n");
+		case 1:
+			Print(A, length);
+			break;
+		case 2:
+			BuildMaxHeap(A);
+			Print(A, length);
+			break;
+		case 3:
+			Heapsort(A);
+			Print(A, length);
+			break;
+		case 4:
+			HeapExtractMax(A);
+			Print(A, length);
+			break;
+		case 5:
+			printf("Enter Index: ");
+			scanf("%d", &i);
+			printf("Enter Key: ");
+			scanf("%d", &key);
+			HeapIncreaseKey(A, i, key);
+			Print(A, length);
+			break;
+		case 6:
+			printf("Enter Key: ");
+			scanf("%d:", &key);
+			MaxHeapInsert(A, key);
+			Print(A, length);
+			break;
+		case 0:
+			break;
+		default:
+			printf("Invalid Input. Try Again.\n");
 		}
 	} while (n != 0);
 }

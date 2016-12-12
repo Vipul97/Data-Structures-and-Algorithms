@@ -13,10 +13,10 @@ struct node *curr = NULL;
 void Print()
 {
 	curr = head;
-	
+
 	if (curr == NULL)
 		printf("Linked List is Empty.");
-	
+
 	else
 		while (curr)
 		{
@@ -29,14 +29,14 @@ void Print()
 
 void InsertStart()
 {
-	curr = (struct node*)malloc(sizeof(struct node));
-	
+	curr = (struct node *)malloc(sizeof(struct node));
+
 	if (curr == NULL)
 	{
 		printf("Error.\n");
 		return;
 	}
-	
+
 	printf("Enter Data: ");
 	scanf("%d", &curr->data);
 
@@ -45,62 +45,62 @@ void InsertStart()
 		head = curr;
 		curr->next = NULL;
 	}
-	
+
 	else
 	{
 		curr->next = head;
 		head = curr;
 	}
-	
+
 	Print();
 }
 
 void InsertEnd()
 {
 	struct node *temp = head;
-	curr = (struct node*)malloc(sizeof(struct node));
-	
+	curr = (struct node *)malloc(sizeof(struct node));
+
 	if (curr == NULL)
 	{
 		printf("Error.\n");
 		return;
 	}
-	
+
 	printf("Enter Data: ");
 	scanf("%d", &curr->data);
-	
+
 	if (head == NULL)
 		head = curr;
-	
+
 	else
 	{
 		while (temp->next != NULL)
 			temp = temp->next;
-	
+
 		temp->next = curr;
 	}
-	
+
 	curr->next = NULL;
-	
+
 	Print();
 }
 
 void InsertKth()
 {
 	int i = 0, k;
-	
+
 	struct node *temp1 = head, *temp2;
-	curr = (struct node*)malloc(sizeof(struct node));
-	
+	curr = (struct node *)malloc(sizeof(struct node));
+
 	if (curr == NULL)
 	{
 		printf("Error.\n");
 		return;
 	}
-	
+
 	printf("Enter Data: ");
 	scanf("%d", &curr->data);
-	
+
 	if (head == NULL)
 	{
 		head = curr;
@@ -111,20 +111,20 @@ void InsertKth()
 	{
 		printf("Enter Position to Insert Node: ");
 		scanf("%d", &k);
-		
+
 		while (i < k && temp1 != NULL)
 		{
 			temp2 = temp1;
 			temp1 = temp1->next;
 			i++;
 		}
-		
+
 		if (temp2 == head)
 		{
 			curr->next = head;
 			head = curr;
 		}
-		
+
 		else
 		{
 			temp2->next = curr;
@@ -138,13 +138,13 @@ void InsertKth()
 void DeleteStart()
 {
 	struct node *temp = head;
-	
+
 	if (head != NULL)
 	{
 		head = head->next;
 		free(temp);
 	}
-	
+
 	Print();
 }
 
@@ -152,7 +152,7 @@ void DeleteEnd()
 {
 	struct node *temp = head;
 	curr = head;
-	
+
 	if (head != NULL)
 	{
 		while (temp->next != NULL)
@@ -160,22 +160,22 @@ void DeleteEnd()
 			curr = temp;
 			temp = temp->next;
 		}
-		
+
 		curr->next = NULL;
-		
+
 		if (temp == head)
 			head = NULL;
 		else
 			free(temp);
 	}
-	
+
 	Print();
 }
 
 void DeleteKth()
 {
 	int i = 0, k;
-	
+
 	struct node *temp = head;
 	curr = head;
 
@@ -183,28 +183,28 @@ void DeleteKth()
 	{
 		printf("Enter Position of Node to Delete: ");
 		scanf("%d", &k);
-		
+
 		while (i < k && temp->next != NULL)
 		{
 			curr = temp;
 			temp = temp->next;
 			i++;
 		}
-		
+
 		if (temp == head)
 			head = head->next;
-		
+
 		curr->next = temp->next;
 		free(temp);
 	}
-	
+
 	Print();
 }
 
 int main()
 {
 	int n;
-	
+
 	do
 	{
 		printf("1. Print\n");
@@ -217,18 +217,34 @@ int main()
 		printf("0. Exit\n");
 		printf("Input: ");
 		scanf("%d", &n);
-		
+
 		switch (n)
 		{
-			case 1: Print(); break;
-			case 2: InsertStart(); break;
-			case 3: InsertEnd(); break;
-			case 4: InsertKth(); break;
-			case 5: DeleteStart(); break;
-			case 6: DeleteEnd(); break;
-			case 7: DeleteKth(); break;
-			case 0: break;
-			default: printf("Invalid Input. Try Again.\n");
+		case 1:
+			Print();
+			break;
+		case 2:
+			InsertStart();
+			break;
+		case 3:
+			InsertEnd();
+			break;
+		case 4:
+			InsertKth();
+			break;
+		case 5:
+			DeleteStart();
+			break;
+		case 6:
+			DeleteEnd();
+			break;
+		case 7:
+			DeleteKth();
+			break;
+		case 0:
+			break;
+		default:
+			printf("Invalid Input. Try Again.\n");
 		}
 	} while (n != 0);
 }
